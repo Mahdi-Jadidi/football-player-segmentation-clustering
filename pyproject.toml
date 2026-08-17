@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "football-player-segmentation"
+version = "1.0.0"
+description = "Unsupervised football-player segmentation with pixel clustering"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "opencv-python-headless>=4.9", "pandas>=2.2", "scikit-learn>=1.4", "scipy>=1.12"]
+[project.optional-dependencies]
+deep = ["torch>=2.2", "torchvision>=0.17"]
+dev = ["pytest>=8", "ruff>=0.6"]
+[project.scripts]
+player-segmentation = "image_segmentation.cli:main"
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.ruff]
+line-length = 140
+[tool.pytest.ini_options]
+testpaths = ["tests"]
