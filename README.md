@@ -1,12 +1,30 @@
 # Football Player Segmentation via Pixel Clustering
 
-Unsupervised football-player segmentation using pixel color, position, and optional deep features. The pipeline compares K-Means, DBSCAN, and agglomerative clustering, filters implausible regions, merges connected components, locates player centroids, and evaluates predicted masks against COCO polygon annotations.
+An unsupervised computer-vision pipeline that turns football broadcast images into player candidates without training a semantic-segmentation network. It treats segmentation as a clustering and spatial-reasoning problem, then evaluates the resulting masks against COCO polygon annotations.
 
-## Modules
+## Problem
 
-`data.py` handles images and COCO annotations, `features.py` builds RGB/HSV/spatial representations, `clustering.py` provides the three backends and parameter tuning, `postprocess.py` creates player candidates, and `evaluation.py` computes Dice and IoU. `pipeline.py` runs the complete batch workflow.
+Broadcast scenes are hard for naive colour thresholding: grass, kits, shadows, lines, crowds, and camera perspective all compete in the image. The goal is to locate plausible player regions using no class-labelled training images.
 
-## Run
+## What was built
+
+- Pixel representations that combine RGB/HSV colour, spatial position, and optional deep features.
+- K-Means, DBSCAN, and agglomerative clustering backends with comparable configuration.
+- Region filtering, connected-component merging, and player-centroid extraction.
+- COCO-based Dice and IoU evaluation, per-image reports, masks, and overlay-ready centroids.
+
+## Main takeaways
+
+The project demonstrates the trade-off between fast global colour grouping and density-aware clustering. DBSCAN is particularly useful when it can separate compact player-like regions from large, uniform background areas, while post-processing is what converts raw clusters into useful detections.
+
+## Pipeline
+
+```text
+image + COCO polygons -> pixel features -> clustering -> region cleanup
+                                             -> masks/centroids -> Dice and IoU
+```
+
+## Reproduce
 
 ```bash
 pip install -e .
@@ -15,8 +33,4 @@ player-segmentation run --images-dir dataset/images \
   --method dbscan --output-dir outputs
 ```
 
-Use `player-segmentation benchmark --image path/to/image.jpg` to compare cluster quality before a batch run. The output contains masks, centroids, per-image scores, aggregate metrics, and the resolved experiment configuration.
-
-## Topics
-
-`computer-vision` `image-segmentation` `clustering` `dbscan` `opencv` `coco`
+Use `player-segmentation benchmark` for a single-image comparison before a batch run. The repository is tested in GitHub Actions.
